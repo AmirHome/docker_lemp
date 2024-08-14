@@ -6,9 +6,9 @@
 /app1/*
 /app2/*
 
-/admin
+/symlink_app1
 /chat
-admin/
+symlink_app1/
 chat/
 
 
