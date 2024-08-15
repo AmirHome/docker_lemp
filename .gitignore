@@ -8,8 +8,17 @@
 
 /symlink_app1
 /chat
+<<<<<<< HEAD
 symlink_app1/
 chat/
+=======
+/admin/*
+/chat/*
+admin/*
+chat/*
+admin
+chat
+>>>>>>> 3f716d7e3b639127eedaf97ed5c395f0bee2ecd9
 
 
 /docker/mysql/data/*
