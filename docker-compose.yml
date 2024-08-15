@@ -9,7 +9,7 @@ services:
       - network
 
   phpmyadmin:
-    image: "phpmyadmin/phpmyadmin"
+    image: "phpmyadmin"
     container_name: "docker-lemp-${APP_NAME}-phpmyadmin"
     environment:
       - PMA_ARBITRARY=1
