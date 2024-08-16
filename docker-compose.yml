@@ -13,8 +13,8 @@ services:
     container_name: "docker-lemp-${APP_NAME}-phpmyadmin"
     environment:
       - PMA_ARBITRARY=1
-      - PMA_HOST=mysql
-      - PMA_USER=root
+      # - PMA_HOST=mysql
+      # - PMA_USER=root
       - PMA_PASSWORD=${DB_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
     ports:
