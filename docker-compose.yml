@@ -1,80 +1,128 @@
 ###############################################################################
 #                          Generated on docker.io                          #
 ###############################################################################
+networks:
+  network:
+    driver: bridge
+
 services:
+
   redis:
     image: "redis:alpine"
-    container_name: "docker-lemp-${APP_NAME}-redis"
+    container_name: "docker-lemp-redis"
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
     networks:
       - network
+    healthcheck:
+        test:
+            - CMD
+            - redis-cli
+            - ping
+        retries: 3
+        timeout: 5s
 
   phpmyadmin:
     image: "phpmyadmin"
-    container_name: "docker-lemp-${APP_NAME}-phpmyadmin"
+    container_name: "docker-lemp-phpmyadmin"
     environment:
-      - PMA_ARBITRARY=1
-      # - PMA_HOST=mysql
-      # - PMA_USER=root
-      - PMA_PASSWORD=${DB_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - PMA_HOST=mysql
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
     ports:
       - "${PHPMYADMIN_PORT:-8080}:80"
+    volumes:
+      - /sessions
+    depends_on:
+      - mysql
     networks:
       - network
 
   mysql:
     image: "mysql:8.0"
-    container_name: "docker-lemp-${APP_NAME}-mysql"
+    container_name: "docker-lemp-mysql"
     working_dir: /app1
     environment:
-      - MYSQL_DATABASE=${DB_DATABASE}
-      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-      - MYSQL_PASSWORD=${DB_PASSWORD}
+        MYSQL_ROOT_PASSWORD: '${DB_ROOT_PASSWORD}'
+        MYSQL_ROOT_HOST: '%'
+        MYSQL_DATABASE: '${DB_DATABASE}'
+        MYSQL_USER: '${DB_USERNAME}'
+        MYSQL_PASSWORD: '${DB_PASSWORD}'
+        DB_BACKUP_PASSWORD: '${DB_BACKUP_PASSWORD}'
+        DB_BACKUP_USER: '${DB_BACKUP_USER}'
     ports:
-      - "${DB_PORT:-3306}:3306"
+      - "${DB_MYSQL_PORT:-3306}:3306"
     volumes:
       - "./docker/mysql/initdb:/docker-entrypoint-initdb.d"
       - "./docker/mysql/data:/var/lib/mysql"
       - "./docker/mysql/logs:/var/log/mysql"
     networks:
       - network
+    healthcheck:
+      test:
+          - CMD
+          - mysqladmin
+          - ping
+          - '-p${DB_PASSWORD}'
+      retries: 3
+      timeout: 5s
 
-  webserver:
-    image: "nginx:alpine"
-    container_name: "docker-lemp-${APP_NAME}-nginx"
-    volumes:
-      - "./symlink_app1:/app1"
-      # - "./chat:/app2"
-      - "./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf"
+  db-mssql:
+    container_name: "docker-lemp-dbmssql"
     ports:
-      - "${WEB_PORT:-80}:80"
-      # - 64001:8080
-    depends_on:
-      - mysql
-      - php-fpm-9001
-      # - php-fpm-9002
-    networks:
-      - network
-
-  php-fpm-9001:
-    build: 
-      context: ./docker/php-fpm
-      dockerfile: Dockerfile.9001
-    #container_name: "docker-lemp-php-fpm-9001"
-    container_name: "docker-lemp-${APP_NAME}-php-fpm-9001"
+      - ${DB_MSSQL_PORT}:1433
     environment:
-      - PHP_FPM_USER=www-data
-      - PHP_FPM_GROUP=www-data
-      - PHP_FPM_LISTEN=9001
-    working_dir: /app1
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${Root@+MuiXbNcztcVar4g}
+      - TZ=Europe/Istanbul   # Set the timezone to Istanbul
+    build:
+      context: ./docker/mssql/
+      dockerfile: Dockerfile
+      # args:
+      #   - DB_PASSWORD=${DB_PASSWORD}
     volumes:
-      - "./symlink_app1:/app1"
-      - "./docker/php-fpm/php-ini-overrides.ini:/usr/local/etc/php/99-overrides.ini"
-    depends_on:
-      - mysql
+      - ./docker/db/mssql/data/:/var/opt/mssql/data
     networks:
       - network
+    deploy:
+      resources:
+        limits:
+          cpus: "${MSSQL_LIMIT_CPU:-0.5}"
+          memory: "${MSSQL_LIMIT_MEMORY:-2000M}"
+        # reservations:
+          #   cpus: '0.25'
+          #   memory: 256M
 
-networks:
-  network:
-    driver: bridge
+  # webserver:
+  #   image: "nginx:alpine"
+  #   container_name: "docker-lemp-nginx"
+  #   volumes:
+  #     - "./symlink_app1:/app1"
+  #     # - "./chat:/app2"
+  #     - "./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf"
+  #   ports:
+  #     - "${WEB_PORT:-80}:80"
+  #     # - 64001:8080
+  #   depends_on:
+  #     - mysql
+  #     - php-fpm-9001
+  #     # - php-fpm-9002
+  #   networks:
+  #     - network
+
+  # php-fpm-9001:
+  #   build: 
+  #     context: ./docker/php-fpm
+  #     dockerfile: Dockerfile.9001
+  #   container_name: "docker-lemp-php-fpm-9001"
+  #   environment:
+  #     - PHP_FPM_USER=www-data
+  #     - PHP_FPM_GROUP=www-data
+  #     - PHP_FPM_LISTEN=9001
+  #   working_dir: /app1
+  #   volumes:
+  #     - "./symlink_app1:/app1"
+  #     - "./docker/php-fpm/php-ini-overrides.ini:/usr/local/etc/php/99-overrides.ini"
+  #   depends_on:
+  #     - mysql
+  #   networks:
+  #     - network
