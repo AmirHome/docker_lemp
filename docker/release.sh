@@ -53,11 +53,12 @@ docker compose down
 docker rm -f docker-lemp-mysql
 docker rm -f docker-lemp-redis
 docker rm -f docker-lemp-dbmssql
+docker rm -f docker-lemp-phpmyadmin
 
 
 # docker network prune -f
 
-$dc --env-file ./docker/.env build
+$dc --env-file ./docker/.env build 
 
 $dc --env-file ./docker/.env up -d
 

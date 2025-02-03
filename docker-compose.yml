@@ -72,7 +72,7 @@ services:
       - ${DB_MSSQL_PORT}:1433
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=${Root@+MuiXbNcztcVar4g}
+      - SA_PASSWORD=${DB_ROOT_PASSWORD}
       - TZ=Europe/Istanbul   # Set the timezone to Istanbul
     build:
       context: ./docker/mssql/
@@ -80,7 +80,7 @@ services:
       # args:
       #   - DB_PASSWORD=${DB_PASSWORD}
     volumes:
-      - ./docker/db/mssql/data/:/var/opt/mssql/data
+      - ./docker/mssql/data/:/var/opt/mssql/data
     networks:
       - network
     deploy:
@@ -91,7 +91,7 @@ services:
         # reservations:
           #   cpus: '0.25'
           #   memory: 256M
-
+          
   # webserver:
   #   image: "nginx:alpine"
   #   container_name: "docker-lemp-nginx"

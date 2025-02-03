@@ -7,4 +7,4 @@
 /docker/mysql/data/*
 /docker/mysql/logs/*
 /docker/mysql/initdb
-/docker/db/mssql/data/*
+/docker/mssql/data/*
