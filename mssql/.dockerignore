@@ -1,7 +1,0 @@
-# Exclude everything by default
-**
-
-# Include only necessary files
-!entrypoint.sh
-!configure-db.sh
-!setup.sql 
