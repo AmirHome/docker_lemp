@@ -16,13 +16,10 @@ while [[ $DBSTATUS -ne 0 ]] && [[ $i -lt 60 ]] && [[ $ERRCODE -ne 0 ]]; do
 	sleep 1
 done
 
-if [ $DBSTATUS -ne 0 ] OR [ $ERRCODE -ne 0 ]; then 
+if [ $DBSTATUS -ne 0 ] || [ $ERRCODE -ne 0 ]; then
 	echo "SQL Server took more than 60 seconds to start up or one or more databases are not in an ONLINE state"
 	exit 1
 fi
-
-# Run the setup script to create the DB and the schema in the DB
-/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P $SA_PASSWORD -d master -i setup.sql
 
 # Check if the database exists
 DBNAME="ferah"
@@ -30,7 +27,7 @@ EXIST=$(/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P $SA_PASSWORD -d mast
 
 if [[ $EXIST -eq 1 ]]; then
     # Backup the database
-    /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P $SA_PASSWORD -No -No -Q "BACKUP DATABASE $DBNAME TO DISK = N'/var/opt/mssql/data/backup.bak' WITH NOFORMAT, NOINIT, NAME = '$DBNAME', SKIP, NOREWIND, NOUNLOAD, STATS = 10"
+    /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P $SA_PASSWORD -No -Q "BACKUP DATABASE $DBNAME TO DISK = N'/var/opt/mssql/data/backup.bak' WITH NOFORMAT, NOINIT, NAME = '$DBNAME', SKIP, NOREWIND, NOUNLOAD, STATS = 10"
 
 else
     # Create and restore the database

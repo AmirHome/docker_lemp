@@ -8,3 +8,5 @@
 /docker/mysql/logs/*
 /docker/mysql/initdb
 /docker/mssql/data/*
+/docker/rabbitmq/data/*
+/docker/.env
