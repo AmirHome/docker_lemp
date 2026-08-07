@@ -1,6 +1,6 @@
 # Docker LEMP — local services
 
-This project provisions the backing services used by local development: Redis, MySQL, phpMyAdmin, SQL Server (`db-mssql`), and RabbitMQ. There is no application code here — see [CLAUDE.md](../CLAUDE.md) for the full architecture notes (including the currently-disabled nginx/php-fpm setup).
+This project provisions the backing services used by local development: Redis, MySQL, phpMyAdmin, SQL Server (`db-mssql`), RabbitMQ, and Mailpit for local email capture. There is no application code here — see [CLAUDE.md](../CLAUDE.md) for the full architecture notes (including the currently-disabled nginx/php-fpm setup).
 
 # How to run #
 
@@ -34,6 +34,7 @@ MySQL 8.0|`docker-lemp-mysql`|`3306`|credentials from `.env` (`DB_USERNAME`/`DB_
 phpMyAdmin|`docker-lemp-phpmyadmin`|`8080`|UI at [localhost:8080](http://localhost:8080), points at the `mysql` service
 SQL Server 2022|`docker-lemp-dbmssql`|`1433`|`sa` password is `DB_ROOT_PASSWORD`; built from `./docker/mssql/`
 RabbitMQ|`docker-lemp-rabbitmq`|`5672` (AMQP), `15672` (management UI)|UI at [localhost:15672](http://localhost:15672); user/pass from `RABBITMQ_USER`/`RABBITMQ_PASSWORD`, default `guest`/`guest`
+Mailpit|`docker-lemp-mailpit`|`8025` (web UI), `1025` (SMTP)|UI at [localhost:8025](http://localhost:8025) for captured mail; point apps at `mailpit:1025` inside the compose network
 
 ## Starting only one service ##
 
